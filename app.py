@@ -8,7 +8,7 @@ import tempfile
 # ------------------------
 st.set_page_config(
     page_title="YouTube Audio Downloader",
-    page_icon="🎵",
+    page_icon="",
     layout="centered"
 )
 
@@ -41,24 +41,20 @@ h1 {
 </style>
 """, unsafe_allow_html=True)
 
-st.title("🎵 YouTube Audio Downloader")
+st.title(" YouTube Audio Downloader")
 
 youtube_url = st.text_input(
     "Paste YouTube URL",
     placeholder="https://www.youtube.com/watch?v=..."
 )
 
-FFMPEG_PATH = r"C:\Users\Shahil\Downloads\ffmpeg-8.1.1-essentials_build\ffmpeg-8.1.1-essentials_build\bin"
-
 def download_audio(url):
     temp_dir = tempfile.mkdtemp()
-
     output_template = os.path.join(temp_dir, "%(title)s.%(ext)s")
 
     ydl_opts = {
         "format": "bestaudio/best",
         "outtmpl": output_template,
-        "ffmpeg_location": "ffmpeg",
         "postprocessors": [
             {
                 "key": "FFmpegExtractAudio",
@@ -71,11 +67,8 @@ def download_audio(url):
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
-
         title = info["title"]
-
         wav_file = os.path.join(temp_dir, f"{title}.wav")
-
         return wav_file, title
 
 
@@ -91,7 +84,7 @@ if st.button("Download Audio"):
 
             with open(file_path, "rb") as audio_file:
                 st.download_button(
-                    label="⬇ Download WAV File",
+                    label=" Download WAV File",
                     data=audio_file,
                     file_name=f"{title}.wav",
                     mime="audio/wav"

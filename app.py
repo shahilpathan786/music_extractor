@@ -55,6 +55,10 @@ def download_audio(url):
     ydl_opts = {
         "format": "bestaudio/best",
         "outtmpl": output_template,
+        "http_headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        },
+        "socket_timeout": 30,
         "postprocessors": [
             {
                 "key": "FFmpegExtractAudio",
@@ -62,7 +66,8 @@ def download_audio(url):
                 "preferredquality": "192",
             }
         ],
-        "quiet": True,
+        "quiet": False,
+        "no_warnings": False,
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -91,4 +96,12 @@ if st.button("Download Audio"):
                 )
 
         except Exception as e:
-            st.error(f"Error: {e}")
+            error_msg = str(e)
+            if "403" in error_msg or "Forbidden" in error_msg:
+                st.error("❌ YouTube blocked the request. This can happen due to:\n- Geographic restrictions\n- Account age/restrictions\n- Rate limiting\n\nTry again in a few minutes or use a different video.")
+            elif "Video unavailable" in error_msg or "private" in error_msg.lower():
+                st.error("❌ This video is unavailable (private, deleted, or restricted).")
+            elif "HTTP Error" in error_msg:
+                st.error(f"❌ Network error: {error_msg}")
+            else:
+                st.error(f"❌ Error: {error_msg}")
